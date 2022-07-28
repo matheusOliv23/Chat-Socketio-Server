@@ -1,5 +1,4 @@
 import express, { Router, Request, Response } from "express";
-
 const http = require("http");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -14,6 +13,7 @@ app.use(express.json());
 route.get("/", (req: Request, res: Response) => {
   res.json({ message: "Mensagens " });
 });
+
 app.use(cors());
 app.use(route);
 
@@ -27,19 +27,22 @@ const io = new Server(server, {
   },
 });
 
+// Estabelecer uma conexão
 io.on("connection", (socket) => {
   console.log(`Usuario conectado ${socket.id}`);
 
+  // Entrar na sala
   socket.on("join_room", (data) => {
-    //evento para receber os dados do front end com a informação da sala
     socket.join(data);
     console.log(`Usuario com o ID: ${socket.id} entrou na sala ${data}`);
   });
 
+  // enviar/receber mensagem
   socket.on("send_message", (data) => {
     const msg = new Message(data);
+    console.log(msg);
 
-    socket.to(data.room).emit("receive_message", data);
+    socket.to(msg.room).emit("receive_message", data);
   });
 
   socket.on("disconnect", () => {
