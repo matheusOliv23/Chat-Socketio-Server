@@ -21,8 +21,9 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
@@ -37,9 +38,8 @@ io.on("connection", (socket) => {
 
   socket.on("send_message", (data) => {
     const msg = new Message(data);
-    msg.save().then(() => {
-      socket.to(data.room).emit("receive_message", data);
-    });
+
+    socket.to(data.room).emit("receive_message", data);
   });
 
   socket.on("disconnect", () => {
@@ -59,7 +59,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    server.listen(process.env.PORT || 8008, () =>
+    server.listen(process.env.PORT || 5000, () =>
       console.log(`Servidor rodando na porta ${process.env.PORT || 5000}!`)
     );
   })
