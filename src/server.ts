@@ -41,9 +41,10 @@ io.on("connection", (socket) => {
   socket.on("send_message", (data) => {
     const msg = new Message(data);
 
+ 
     msg.save().then(() => {
       // Apenas receberá mensagens entre salas iguais
-      io.to(msg.room).emit("receive_message", msg);
+      socket.to(msg.room).emit("receive_message", msg);
     });
   });
 
