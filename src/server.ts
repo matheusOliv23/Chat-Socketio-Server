@@ -40,8 +40,8 @@ io.on("connection", (socket) => {
   });
 });
 
+// Configuração para o dotenv
 dotenv.config();
-
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
 
