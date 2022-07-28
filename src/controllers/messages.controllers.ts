@@ -7,7 +7,6 @@ const sendMessage = async (req, res, next) => {
   const newMessage = new Message({
     username,
     message,
-    image,
     date,
   });
 

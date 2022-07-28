@@ -3,20 +3,21 @@ const http = require("http");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Message = require("./models/message");
+
 const dotenv = require("dotenv");
 const route = Router();
 const { Server } = require("socket.io");
 
 const app = express();
 app.use(express.json());
+app.use(cors());
+app.use(route);
 
 route.get("/", (req: Request, res: Response) => {
   res.json({ message: "Mensagens " });
 });
 
-app.use(cors());
-app.use(route);
-
+// Socketio
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -31,6 +32,10 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log(`Usuario conectado ${socket.id}`);
 
+  Message.find().then((result) => {
+    socket.emit("output-message", result);
+  });
+
   // Entrar na sala
   socket.on("join_room", (data) => {
     socket.join(data);
@@ -42,7 +47,7 @@ io.on("connection", (socket) => {
     const msg = new Message(data);
     console.log(msg);
 
-    socket.to(msg.room).emit("receive_message", data);
+    socket.to(data.room).emit("receive_message", data);
   });
 
   socket.on("disconnect", () => {
