@@ -45,8 +45,7 @@ io.on("connection", (socket) => {
   socket.on("send_message", (data) => {
     const msg = new Message(data);
 
-    socket.to(data.room).emit("receive_message", msg);
-
+    //socket.to(data.room).emit("receive_message", msg);
     msg.save().then(() => {
       io.emit("receive_message", msg);
     });
