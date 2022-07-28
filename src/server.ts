@@ -16,11 +16,21 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log(socket.id);
+  console.log(`Usuario conectado ${socket.id}`);
+
+  socket.on("join_room", (data) => {
+    //evento para receber os dados do front end com a informação da sala
+    socket.join(data);
+    console.log(`Usuario com o ID: ${socket.id} entrou na sala ${data}`);
+  });
+
+  socket.on("send_message", (data) => {
+    socket.to(data.room).emit("receive_message", data);
+  });
 
   socket.on("disconnect", () => {
-    console.log(socket.id);
+    console.log(`Usuario desconectado ${socket.id}`);
   });
 });
 
-server.listen(3333, () => "server running on port 3333");
+server.listen(3001, () => console.log("Servidor funcionando"));
