@@ -1,14 +1,21 @@
-import express from "express";
+import express, { Router, Request, Response } from "express";
 
 const http = require("http");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Message = require("./models/message");
 const dotenv = require("dotenv");
+const route = Router();
 const { Server } = require("socket.io");
 
 const app = express();
+app.use(express.json());
+
+route.get("/", (req: Request, res: Response) => {
+  res.json({ message: "Mensagens " });
+});
 app.use(cors());
+app.use(route);
 
 const server = http.createServer(app);
 
