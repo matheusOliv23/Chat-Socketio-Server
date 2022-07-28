@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
   username: { type: String, required: true },
+  room: { type: String, required: true },
   message: { type: String, required: true },
   date: { type: String, required: true },
 });

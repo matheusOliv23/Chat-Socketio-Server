@@ -31,28 +31,24 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log(`Usuario conectado ${socket.id}`);
 
-  Message.find().then((result) => {
-    socket.emit("output-message", result);
-  });
-
   // Entrar na sala
   socket.on("join_room", (data) => {
     socket.join(data);
     console.log(`Usuario com o ID: ${socket.id} entrou na sala ${data}`);
   });
 
-  // enviar/receber mensagem
+  // Enviar/receber mensagem
   socket.on("send_message", (data) => {
     const msg = new Message(data);
 
-    //socket.to(data.room).emit("receive_message", msg);
     msg.save().then(() => {
-      io.emit("receive_message", msg);
+      // Apenas receberá mensagens entre salas iguais
+      io.to(msg.room).emit("receive_message", msg);
     });
   });
 
   socket.on("disconnect", () => {
-    console.log(`Usuario desconectado ${socket.id}`);
+    console.log(`Usuario ${socket.id} desconectado `);
   });
 });
 
