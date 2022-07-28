@@ -1,9 +1,13 @@
 import express from "express";
-const app = express();
+
 const http = require("http");
 const cors = require("cors");
+const mongoose = require("mongoose");
+const Message = require("./models/message");
+const dotenv = require("dotenv");
 const { Server } = require("socket.io");
 
+const app = express();
 app.use(cors());
 
 const server = http.createServer(app);
@@ -25,7 +29,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send_message", (data) => {
-    socket.to(data.room).emit("receive_message", data);
+    const msg = new Message(data);
+    msg.save().then(() => {
+      socket.to(data.room).emit("receive_message", data);
+    });
   });
 
   socket.on("disconnect", () => {
@@ -33,4 +40,22 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3001, () => console.log("Servidor funcionando"));
+dotenv.config();
+
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
+
+// Conectar ao servidor do MongoDB
+mongoose
+  .connect(process.env.DB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    server.listen(process.env.PORT || 8008, () =>
+      console.log(`Servidor rodando na porta ${process.env.PORT || 5000}!`)
+    );
+  })
+  .catch((error) =>
+    console.log("Não foi possível se conectar ao servidor: ", error)
+  );
