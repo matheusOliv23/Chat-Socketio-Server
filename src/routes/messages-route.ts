@@ -1,7 +1,7 @@
 const express = require("express");
 
 // Local Imports
-const controllers = require("../controllers/messages-controllers");
+const controllers = require("../controllers/messages.controllers");
 
 const router = express.Router();
 
